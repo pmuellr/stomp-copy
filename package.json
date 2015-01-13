@@ -1,0 +1,24 @@
+{
+  "name":         "stomp-copy",
+  "version":      "1.0.0",
+  "description":  "copy messages from a STOMP queue to CouchDB",
+  "author":       "pmuellr",
+  "homepage":     "https://github.com/pmuellr/stomp-copy",
+  "license":      "Apache-2.0",
+  "repository": {
+    "type":       "git",
+    "url" :       "https://github.com/pmuellr/stomp-copy"
+  },
+  "main":         "index.js",
+  "scripts": {
+    "start":      "node index",
+    "jbuild":     "jbuild",
+    "watch":      "jbuild watch"
+  },
+  "dependencies": {
+    "cfenv":        "1.0.x",
+    "express":      "4.10.x",
+    "nano":         "6.0.x",
+    "stomp-client": "0.5.x"
+  }
+}

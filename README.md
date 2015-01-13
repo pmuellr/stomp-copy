@@ -30,8 +30,8 @@ Create a Cloudant Database with the command:
 
     cf create-service cloudantNoSQLDB Shared stomp-db
 
-Edit the `manifest-yml` and change the `host` property to a hostname unique
-across your Cloud Foundry instance.
+Copy the file `manifest-sample.yml` to the file `manifest.yml`and change the
+`host` property to a hostname unique across your Cloud Foundry instance.
 
 Finally, push the application
 

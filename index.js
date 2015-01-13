@@ -1,3 +1,5 @@
+var fs = require("fs")
+
 var NANO    = require("nano")
 var cfenv   = require("cfenv")
 var stomp   = require("stomp-client")
@@ -6,6 +8,10 @@ var express = require("express")
 //------------------------------------------------------------------------------
 var RecordsRead    = 0
 var RecordsWritten = 0
+var IndexHtml      = fs.readFileSync("index.html", "utf8")
+var LastTen        = []
+var StompServer
+var StompQueue
 
 var DB
 
@@ -19,13 +25,42 @@ startStompReader(appEnv)
 function startWebServer(appEnv) {
   var app = express()
 
-  app.get('/', function (req, res) {
-    res.send("records read: " + RecordsRead + "; written: " + RecordsWritten)
-  })
+  app.get('/', handleHomePage)
 
-  app.listen(appEnv.port, appEnv.bind, function() {
-    console.log("server starting on " + appEnv.url)
+  app.listen(appEnv.port, appEnv.bind, serverStarted)
+}
+
+//------------------------------------------------------------------------------
+function serverStarted() {
+  console.log("server starting on " + appEnv.url)
+}
+
+//------------------------------------------------------------------------------
+function handleHomePage(request, response) {
+  var html = IndexHtml
+
+  var lastTen = getLastTen()
+
+  html = html.replace("%%server%%",           StompServer)
+  html = html.replace("%%queue%%",            StompQueue)
+  html = html.replace("%%messagesRead%%",     RecordsRead)
+  html = html.replace("%%messagesWritten%%",  RecordsWritten)
+  html = html.replace("%%last10messages%%",   getLastTen())
+
+  response.send(html)
+}
+
+//------------------------------------------------------------------------------
+function getLastTen() {
+  var result = []
+
+  result.push("<table border=1 cellpadding=5 cellspacing=0>")
+  LastTen.forEach(function(record) {
+    result.push("<tr><td><pre>" + JSON.stringify(record, null, 2)) + "</pre>"
   })
+  result.push("</table>")
+
+  return result.join("\n")
 }
 
 //------------------------------------------------------------------------------
@@ -49,6 +84,9 @@ function startStompReader(appEnv) {
   var host   = stompCreds.host
   var queue  = stompCreds.queue
   var dbName = getDBName(queue)
+
+  StompServer = host
+  StompQueue  = queue
 
   var client = new stomp(host)
 
@@ -75,6 +113,12 @@ function startStompReader(appEnv) {
         }
 
         writeRecord(record)
+
+        while (LastTen.length >= 10) {
+          LastTen.shift()
+        }
+
+        LastTen.push(record)
       })
   })
 }

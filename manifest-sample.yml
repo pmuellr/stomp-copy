@@ -12,6 +12,7 @@ applications:
 
   # this is the host name of your app
   # modify to make unique across the mybluemix.net domain
+  # eg, my initials are pjm, so I add a `-pjm` suffix to the host
 
   host:    stomp-copy-pjm
 

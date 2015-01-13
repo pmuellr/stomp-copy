@@ -20,7 +20,8 @@ applications:
   memory:  256M
 
   # services expected to have available
-  
+
   services:
 
   - stomp
+  - stomp-db
